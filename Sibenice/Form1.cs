@@ -15,6 +15,7 @@ namespace Sibenice
 
     public partial class Form1 : Form
     {
+
         List<string> Slova = new List<string>
         {
         {"int"},
@@ -38,12 +39,19 @@ namespace Sibenice
         {"for"},
         {"while"}
         };
-
         List<char> slovo = new List<char>();
+
         Random rnd = new Random();
+
+        Pen thickPen = new Pen(Color.Black, 5);
+        Pen thickPenBrown = new Pen(Color.Brown, 16);
+
+        char[] WordArray;
+
         public int random;
-        char Key;
         int FailedCount = 0;
+        int count   = 0;
+        int maxAllowedFailedAttempts = 7;
 
         public Form1()
         {
@@ -53,17 +61,22 @@ namespace Sibenice
         private void Form1_Load(object sender, EventArgs e)
         {
             label1.Location = new Point(ClientSize.Width / 2 - label1.Width / 2, 10);
-            random = rnd.Next(1, 21);
+            random = rnd.Next(0, 20);
             for (int i = 0; i < Slova[random].Length; i++)
             {
                 slovo.Add(Slova[random][i]);
             }
 
-            slovo = slovo.Select(x => char.ToUpper(x)).ToList();
-                
+            WordArray = new char[slovo.Count];  
+
             for (int i = 0; i < slovo.Count; i++)
             {
-                label1.Text += "?";
+                WordArray[i] = '?';
+            }
+
+            foreach (char ch in WordArray)
+            {
+                label1.Text += ch;
             }
         }
 
@@ -74,12 +87,99 @@ namespace Sibenice
             kp.FillRectangle(Brushes.LightGray, 0, 0, ClientSize.Width, 30);
             kp.FillRectangle(Brushes.LightSkyBlue, 0, 30, ClientSize.Width, ClientSize.Height - 200);
             kp.FillRectangle(Brushes.LightGreen, 0, ClientSize.Height - 200, ClientSize.Width, ClientSize.Height);
-        }
 
+            if (FailedCount>=1)
+            {
+                kp.FillRectangle(Brushes.Brown, 200, 50, 20, ClientSize.Height - 200);
+            }
+
+            if (FailedCount >= 2)
+            {
+                kp.FillRectangle(Brushes.Brown, 200, 50, 200, 20);
+            }
+
+            if (FailedCount >= 3)
+            {
+                kp.DrawLine(thickPenBrown, 210 , 130, 285, 55);
+                
+            }
+
+            if (FailedCount >= 4)
+            {
+                kp.FillRectangle(Brushes.Brown, 380, 60, 10, 50);
+            }
+
+
+            if (FailedCount >= 5)
+            {
+                kp.FillEllipse(Brushes.Yellow, 360, 110, 50,50);
+                kp.DrawEllipse(thickPen, 360, 110, 50, 50);
+            }
+
+            if (FailedCount >= 6)
+            {
+                kp.DrawLine(thickPen, 385, 160, 385, 260);
+            }
+
+            if (FailedCount >= 7)
+            {
+                kp.DrawLine(thickPen, 385, 250, 385+50, 250+50);
+                kp.DrawLine(thickPen, 385, 250, 385 - 50, 250 + 50);
+                kp.DrawLine(thickPen, 385, 200, 385 + 50, 200 + 50);
+                kp.DrawLine(thickPen, 385, 200, 385 - 50, 200 + 50);
+            }
+        }
 
         private void Form1_KeyDown(object sender, KeyEventArgs e)
         {
-            char currentLetter = 'a';
+                char currentLetter = char.ToLower((char)e.KeyValue);
+                if (slovo.Contains(currentLetter))
+                {
+                    count = 0;
+                    foreach (char x in slovo)
+                    {
+                        if (x == currentLetter)
+                        {
+                            label1.Text = null;
+                            WordArray[count] = x;
+                        }
+                        count++;
+                    }
+                }
+                else
+                {
+                    label1.Text = null;
+                    FailedCount++;
+                    Refresh();
+                }
+                foreach (char ch in WordArray)
+                {
+                    label1.Text += ch;
+                }
+
+            if (GameWon())
+            {
+                Refresh();
+                MessageBox.Show("Congratulations! You've won!");
+                Close();
+            }
+            else if (GameLost())
+            {
+                Refresh();
+                MessageBox.Show("GAME OVER." + "\nFailed:" + FailedCount);
+                Close();
+            }
+        }
+        
+
+        private bool GameWon()
+        {
+            return !WordArray.Contains('?');
+        }
+
+        private bool GameLost()
+        {
+            return FailedCount >= maxAllowedFailedAttempts;
         }
 
 
