@@ -16,7 +16,7 @@ namespace Sibenice
     public partial class Form1 : Form
     {
 
-        List<string> Slova = new List<string>
+        List<string> WordsList = new List<string>
         {
         {"int"},
         {"float"},
@@ -39,7 +39,7 @@ namespace Sibenice
         {"for"},
         {"while"}
         };
-        List<char> slovo = new List<char>();
+        List<char> word = new List<char>();
 
         Random rnd = new Random();
 
@@ -62,14 +62,14 @@ namespace Sibenice
         {
             label1.Location = new Point(ClientSize.Width / 2 - label1.Width / 2, 10);
             random = rnd.Next(0, 20);
-            for (int i = 0; i < Slova[random].Length; i++)
+            for (int i = 0; i < WordsList[random].Length; i++)
             {
-                slovo.Add(Slova[random][i]);
+                word.Add(WordsList[random][i]);
             }
 
-            WordArray = new char[slovo.Count];  
+            WordArray = new char[word.Count]; 
 
-            for (int i = 0; i < slovo.Count; i++)
+            for (int i = 0; i < word.Count; i++)
             {
                 WordArray[i] = '?';
             }
@@ -133,10 +133,10 @@ namespace Sibenice
         private void Form1_KeyDown(object sender, KeyEventArgs e)
         {
                 char currentLetter = char.ToLower((char)e.KeyValue);
-                if (slovo.Contains(currentLetter))
+                if (word.Contains(currentLetter))
                 {
                     count = 0;
-                    foreach (char x in slovo)
+                    foreach (char x in word)
                     {
                         if (x == currentLetter)
                         {
